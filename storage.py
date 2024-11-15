@@ -6,7 +6,13 @@ class Request(TypedDict):
 # end class
 
 
-data = {
+class Data(TypedDict):
+    proxy: None | str
+    requests: list[Request]
+# end class
+
+
+data: Data = {
     "proxy": None,
     "requests": [],
 }
