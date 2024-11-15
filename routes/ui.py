@@ -63,7 +63,7 @@ def proxy_requests():
     {"\n".join([
         f"""
         <li>
-            <a href="{url_for(f"{ui.name}.{proxy_request.__name__}", request=index)}">{req['url']}</a>
+            <a href="{url_for(f"{ui.name}.{proxy_request.__name__}", request=index)}">{req.path}</a>
         </li>
         """
         for index, req in enumerate(storage.get_requests())
