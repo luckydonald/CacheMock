@@ -1,3 +1,11 @@
+from typing import TypedDict
+
+
+class Request(TypedDict):
+    pass
+# end class
+
+
 data = {
     "proxy": None,
     "requests": [],
@@ -17,4 +25,13 @@ def get_setup_proxy() -> str | None:
 
 def set_setup_proxy(proxy: str) -> None:
     data["proxy"] = proxy
+# end def
+
+def add_request(request: Request) -> None:
+    pass
+# end def
+
+
+def get_requests() -> list[Request]:
+    return []
 # end def
