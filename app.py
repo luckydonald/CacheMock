@@ -15,7 +15,7 @@ app.register_blueprint(ui.ui, url_prefix=HIDDEN_PATH)
 @app.route('/<path:path>')
 def catch_all(path):
     if not storage.is_setup():
-        url = url_for(f"{ui.name},{settings_index.__name__}")
+        url = url_for(f"{ui.name}.{settings_index.__name__}")
         return f"""YOU NEED TO SETUP FIRST\n\n<br><a href="{url}">Click here</a> or<br>\n\ngo to: {url}"""
     # end if
     return 'You want path: %s' % path
