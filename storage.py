@@ -34,10 +34,10 @@ def set_setup_proxy(proxy: str) -> None:
 # end def
 
 def add_request(request: Request) -> None:
-    pass
+    data["requests"].append(request)
 # end def
 
 
 def get_requests() -> list[Request]:
-    return []
+    return data["requests"][:]
 # end def
