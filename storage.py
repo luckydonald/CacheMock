@@ -1,8 +1,19 @@
 from typing import TypedDict
+from pydantic.dataclasses import dataclass
+
+@dataclass
+class Response:
+    content: bytes
+    status_code: int
+    headers: dict[str, str]
+# end class
 
 
-class Request(TypedDict):
-    url: str
+@dataclass
+class Request:
+    name: str | None
+    path: str
+    response: Response | None
 # end class
 
 
@@ -48,5 +59,15 @@ def get_request(pk: int) -> Request:
 # end def
 
 def match_request(path: str) -> Request | None:
+    return None
+# end def
+
+def set_cache(
+    *,
+    pk: int,
+    name: str | None,
+    path: str,
+    response: Response | None,
+) -> None:
     return None
 # end def
