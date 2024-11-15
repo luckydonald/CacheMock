@@ -1,1 +1,1 @@
-HIDDEN_PATH = '__proxy__'
+HIDDEN_PATH = '/__proxy__'

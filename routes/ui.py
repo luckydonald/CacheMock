@@ -1,3 +1,4 @@
+import json
 from html import escape
 
 from flask import Blueprint, request, url_for, redirect
@@ -52,4 +53,27 @@ def proxy_setup():
             <a href="{url_for(f"{ui.name}.{settings_index.__name__}")}">back</a>
         """
     # end if
+# end def
+
+@ui.route(f'/requests')
+def proxy_requests():
+    requests = storage.get_requests()
+    return f"""
+    <ul>
+    {"\n".join([
+        f"""
+        <li>
+            <a href="{url_for(f"{ui.name}.{proxy_request.__name__}", request=index)}">{req['url']}</a>
+        </li>
+        """
+        for index, req in enumerate(storage.get_requests())
+    ])}
+    </ul>
+    """
+# end def
+
+@ui.route('/requests/<int:request>')
+def proxy_request(request_pk: int):
+    req = storage.get_request(request_pk)
+    return json.dumps(req)
 # end def

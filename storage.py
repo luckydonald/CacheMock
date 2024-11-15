@@ -2,7 +2,7 @@ from typing import TypedDict
 
 
 class Request(TypedDict):
-    pass
+    url: str
 # end class
 
 
@@ -40,4 +40,9 @@ def add_request(request: Request) -> None:
 
 def get_requests() -> list[Request]:
     return data["requests"][:]
+# end def
+
+
+def get_request(pk: int) -> Request:
+    return data["requests"][pk]
 # end def
