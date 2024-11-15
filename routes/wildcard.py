@@ -39,7 +39,6 @@ def catch_all(path: str):
         headers={k: v for k, v in flask_request.headers if k.lower() != 'host'},  # exclude 'host' header
         data=flask_request.get_data(),
         cookies=flask_request.cookies,
-
     )
 
     match = storage.match_request(request)
@@ -47,7 +46,7 @@ def catch_all(path: str):
 
     if match:
         pk, req = match
-        if req.response is not None:
+        if req.is_cached():
             return FlaskResponse(
                 response=req.response.content,
                 headers=req.response.headers,

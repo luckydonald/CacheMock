@@ -40,6 +40,13 @@ class Cache:
     request: Request
     response: Response | None
 
+    def is_cached(self) -> bool:
+        return (
+            self.response is not None
+            and self.response.status_code not in range(500, 600)
+        )
+    # end if
+
     def update(self, request: Self) -> Self:
         self.name = request.name
         # self.path = request.path
