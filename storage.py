@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, Self, Any
 from pydantic.dataclasses import dataclass
 
 @dataclass
@@ -14,6 +14,13 @@ class Request:
     name: str | None
     path: str
     response: Response | None
+
+    def update(self, request: Self) -> Self:
+        self.name = request.name
+        self.path = request.path
+        self.response = request.response
+        return self
+    # end def
 # end class
 
 
@@ -58,8 +65,14 @@ def get_request(pk: int) -> Request:
     return data["requests"][pk]
 # end def
 
-def match_request(path: str) -> Request | None:
-    return None
+def match_request(path: str) -> tuple[int, Request] | None:
+    reqs = [(index, req) for index, req in enumerate(data["requests"]) if req.path == path]
+    if len(reqs) == 0:
+        return None
+    elif len(reqs) == 1:
+        return reqs[0]
+    else:
+        raise KeyError(f'No matching request: {path}')
 # end def
 
 def set_cache(
@@ -69,5 +82,11 @@ def set_cache(
     path: str,
     response: Response | None,
 ) -> None:
-    return None
+    request: Any = Request(name, path, response)
+    request: Request
+    if pk in data["requests"]:
+        data["requests"][pk].update(request)
+    else:
+        add_request(request)
+    # end if
 # end def
