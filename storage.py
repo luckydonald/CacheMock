@@ -88,8 +88,8 @@ def set_cache(
     path: str,
     response: Response | None,
 ) -> None:
-    request: Any = Request(name, path, response)
-    request: Request
+    request: Any = Cache(name, path, response)
+    request: Cache
     if pk in data["requests"]:
         data["requests"][pk].update(request)
     else:
