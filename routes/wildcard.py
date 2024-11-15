@@ -3,7 +3,7 @@ import requests
 
 import storage
 from routes.ui import ui, settings_index
-from storage import Response
+from storage import Response, Request
 
 wildcard = Blueprint('wildcard', __name__)
 
@@ -24,7 +24,16 @@ def catch_all(path: str):
         return f"""YOU NEED TO SETUP FIRST\n\n<br><a href="{url}">Click here</a> or<br>\n\ngo to: {url}"""
     # end if
 
-    match = storage.match_request(path)
+    # noinspection PyArgumentList
+    request = Request(
+        method=flask_request.method,
+        url=f"{storage.get_setup_proxy()}{path}",
+        headers={k: v for k, v in flask_request.headers if k.lower() != 'host'},  # exclude 'host' header
+        data=flask_request.get_data(),
+        cookies=flask_request.cookies,
+    )
+
+    match = storage.match_request(request)
     pk = None
 
     if match:
@@ -39,11 +48,11 @@ def catch_all(path: str):
     # end if
 
     response = requests.request(
-        method=flask_request.method,
-        url=f"{storage.get_setup_proxy()}{path}",
-        headers={k:v for k,v in flask_request.headers if k.lower() != 'host'}, # exclude 'host' header
-        data=flask_request.get_data(),
-        cookies=flask_request.cookies,
+        method=request.method,
+        url=request.url,
+        headers=request.headers,
+        data=request.data,
+        cookies=request.cookies,
         allow_redirects=False,  # we want to have the client reproduce that ourselves
     )
 
@@ -56,6 +65,7 @@ def catch_all(path: str):
 
     storage.set_cache(
         pk=pk,
+        request=request,
         response=Response(),
     )
 
