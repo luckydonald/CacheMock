@@ -4,7 +4,7 @@ import requests
 import storage
 from routes.ui import ui
 from routes.wildcard import wildcard
-from secrets import HIDDEN_PATH
+from env_secrets import HIDDEN_PATH
 
 app = Flask(__name__)
 
