@@ -3,6 +3,7 @@ from typing import Any
 
 from flask import Blueprint, url_for, request as flask_request, Response as FlaskResponse
 import requests
+from flask_cors import cross_origin
 
 import storage
 from routes.ui import ui, settings_index
@@ -19,8 +20,11 @@ EXCLUDED_HEADERS = [
 ]
 
 
-@wildcard.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'HEAD'])
-@wildcard.route('/<path:path>', methods=['GET', 'POST', 'HEAD'])
+ALL_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
+
+@cross_origin()
+@wildcard.route('/', defaults={'path': ''}, methods=ALL_METHODS)
+@wildcard.route('/<path:path>', methods=ALL_METHODS)
 def catch_all(path: str):
     if not storage.is_setup():
         url = url_for(f"{ui.name}.{settings_index.__name__}")
@@ -31,9 +35,11 @@ def catch_all(path: str):
     request = Request(
         method=flask_request.method,
         url=f"{storage.get_setup_proxy()}{path}",
+        query=flask_request.args,
         headers={k: v for k, v in flask_request.headers if k.lower() != 'host'},  # exclude 'host' header
         data=flask_request.get_data(),
         cookies=flask_request.cookies,
+
     )
 
     match = storage.match_request(request)
@@ -55,6 +61,7 @@ def catch_all(path: str):
             method=request.method,
             url=request.url,
             headers=request.headers,
+            params=request.query,
             data=request.data,
             cookies=request.cookies,
             allow_redirects=False,  # we want to have the client reproduce that ourselves

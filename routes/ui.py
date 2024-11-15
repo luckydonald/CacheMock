@@ -66,6 +66,7 @@ def proxy_requests():
         <li>
             <a href="{url_for(f"{ui.name}.{proxy_request.__name__}", request_pk=index)}">
             {escape(req.name).join(["<h4>", "</h4>"]) if req.name else ''}
+            <code>{escape(req.request.method)}</code>
             {escape(req.request.url)}<br>
             </a>
         </li>

@@ -7,7 +7,7 @@ from pydantic.dataclasses import dataclass
 class Response:
     content: bytes
     status_code: int
-    headers: dict[str, str]
+    headers: dict[str, str | list[str]]
 # end class
 
 
@@ -15,7 +15,8 @@ class Response:
 class Request:
     method: str
     url: str
-    headers: dict[str, str]
+    query: dict[str, str | list[str]]
+    headers: dict[str, str | list[str]]
     data: str
     cookies: dict[str, str]
 
@@ -23,6 +24,7 @@ class Request:
         return (
             self.method == request.method
             and self.url == request.url
+            and self.query == request.query
             and self.headers == request.headers
             and self.data == request.data
             and self.cookies == request.cookies
