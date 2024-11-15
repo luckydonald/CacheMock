@@ -11,6 +11,12 @@ class Response:
 
 @dataclass
 class Request:
+    pass
+# end class
+
+
+@dataclass
+class Cache:
     name: str | None
     path: str
     response: Response | None
@@ -26,7 +32,7 @@ class Request:
 
 class Data(TypedDict):
     proxy: None | str
-    requests: list[Request]
+    requests: list[Cache]
 # end class
 
 
@@ -51,21 +57,21 @@ def set_setup_proxy(proxy: str) -> None:
     data["proxy"] = proxy
 # end def
 
-def add_request(request: Request) -> None:
+def add_request(request: Cache) -> None:
     data["requests"].append(request)
 # end def
 
 
-def get_requests() -> list[Request]:
+def get_requests() -> list[Cache]:
     return data["requests"][:]
 # end def
 
 
-def get_request(pk: int) -> Request:
+def get_request(pk: int) -> Cache:
     return data["requests"][pk]
 # end def
 
-def match_request(path: str) -> tuple[int, Request] | None:
+def match_request(path: str) -> tuple[int, Cache] | None:
     reqs = [(index, req) for index, req in enumerate(data["requests"]) if req.path == path]
     if len(reqs) == 0:
         return None
