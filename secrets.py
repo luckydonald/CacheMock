@@ -1,0 +1,1 @@
+HIDDEN_PATH = '__proxy__'
