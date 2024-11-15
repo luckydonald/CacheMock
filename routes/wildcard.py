@@ -1,4 +1,4 @@
-from flask import Blueprint, url_for, request, Response as FlaskResponse
+from flask import Blueprint, url_for, request as flask_request, Response as FlaskResponse
 import requests
 
 import storage
@@ -39,11 +39,11 @@ def catch_all(path: str):
     # end if
 
     response = requests.request(
-        method=request.method,
+        method=flask_request.method,
         url=f"{storage.get_setup_proxy()}{path}",
-        headers={k:v for k,v in request.headers if k.lower() != 'host'}, # exclude 'host' header
-        data=request.get_data(),
-        cookies=request.cookies,
+        headers={k:v for k,v in flask_request.headers if k.lower() != 'host'}, # exclude 'host' header
+        data=flask_request.get_data(),
+        cookies=flask_request.cookies,
         allow_redirects=False,  # we want to have the client reproduce that ourselves
     )
 
