@@ -46,3 +46,7 @@ def get_requests() -> list[Request]:
 def get_request(pk: int) -> Request:
     return data["requests"][pk]
 # end def
+
+def match_request(path: str) -> Request | None:
+    return None
+# end def
