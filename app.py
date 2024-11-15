@@ -1,7 +1,5 @@
-from flask import Flask, url_for
-import requests
+from flask import Flask
 
-import storage
 from routes.ui import ui
 from routes.wildcard import wildcard
 from env_secrets import HIDDEN_PATH
@@ -13,4 +11,4 @@ app.register_blueprint(ui, url_prefix=HIDDEN_PATH)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5002, debug=True)

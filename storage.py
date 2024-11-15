@@ -1,4 +1,6 @@
 from typing import TypedDict, Self, Any
+
+from pydantic import RootModel
 from pydantic.dataclasses import dataclass
 
 @dataclass
@@ -46,6 +48,9 @@ class Cache:
     def match(self, request: Self) -> bool:
         return self.request.match(request.request)
     # end def
+
+    def dump_json(self):
+        return RootModel[self.__class__](self).model_dump_json(indent=4)
 # end class
 
 
@@ -87,8 +92,11 @@ def get_requests() -> list[Cache]:
 # end def
 
 
-def get_request(pk: int) -> Cache:
-    return data["requests"][pk]
+def get_request(pk: int) -> Cache | None:
+    try:
+        return data["requests"][pk]
+    except IndexError:
+        return None
 # end def
 
 def match_request(search: Request) -> tuple[int, Cache] | None:

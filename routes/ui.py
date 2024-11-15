@@ -1,7 +1,7 @@
 import json
 from html import escape
 
-from flask import Blueprint, request, url_for, redirect
+from flask import Blueprint, request, url_for, redirect, Response as FlaskResponse
 
 import storage
 
@@ -18,6 +18,7 @@ def settings_index():
     return f"""
     <ul>
     <li><a href="{escape(url_for(f"{ui.name}.{proxy_setup.__name__}"))}">Proxy URL settings</a></li>
+    <li><a href="{escape(url_for(f"{ui.name}.{proxy_requests.__name__}"))}">Stored Routes</a></li>
     </ul>
     """
 # end def
@@ -63,7 +64,10 @@ def proxy_requests():
     {"\n".join([
         f"""
         <li>
-            <a href="{url_for(f"{ui.name}.{proxy_request.__name__}", request=index)}">{req.path}</a>
+            <a href="{url_for(f"{ui.name}.{proxy_request.__name__}", request_pk=index)}">
+            {escape(req.name).join(["<h4>", "</h4>"]) if req.name else ''}
+            {escape(req.request.url)}<br>
+            </a>
         </li>
         """
         for index, req in enumerate(storage.get_requests())
@@ -72,8 +76,45 @@ def proxy_requests():
     """
 # end def
 
-@ui.route('/requests/<int:request>')
+@ui.route('/requests/<int:request_pk>')
 def proxy_request(request_pk: int):
     req = storage.get_request(request_pk)
-    return json.dumps(req)
+    if request.headers['Accept'] == 'application/json':
+        if req is None:
+            return FlaskResponse(
+                response=f"""{
+                    "ok": false,
+                    "status": 404,
+                    "reason": "Not Found",
+                    "message": "The caching entry with id {request_pk} does not exist."
+                }""",
+                status=404,
+                mimetype="application/json",
+            )
+        # end if
+        return FlaskResponse(
+            response=req.dump_json(),
+            status=200,
+            mimetype='application/json',
+            content_type='application/json',
+        )
+    else:
+        if req is None:
+            return FlaskResponse(
+                response=f"""
+                <h1>Not Found</h1>
+                <hr />
+                The caching entry with id <code>{request_pk}</code> does not exist.
+                """,
+                status=404,
+                mimetype="text/html",
+            )
+        # end if
+        return FlaskResponse(
+            response=req.dump_json(),
+            status=200,
+            mimetype='application/json',
+            content_type='application/json',
+        )
+    # end if
 # end def

@@ -1,3 +1,6 @@
+from html import escape
+from typing import Any
+
 from flask import Blueprint, url_for, request as flask_request, Response as FlaskResponse
 import requests
 
@@ -47,28 +50,60 @@ def catch_all(path: str):
         # end if
     # end if
 
-    response = requests.request(
-        method=request.method,
-        url=request.url,
-        headers=request.headers,
-        data=request.data,
-        cookies=request.cookies,
-        allow_redirects=False,  # we want to have the client reproduce that ourselves
-    )
+    try:
+        flask_response = requests.request(
+            method=request.method,
+            url=request.url,
+            headers=request.headers,
+            data=request.data,
+            cookies=request.cookies,
+            allow_redirects=False,  # we want to have the client reproduce that ourselves
+            timeout=60,
+        )
+    except requests.exceptions.ConnectionError:
+        return FlaskResponse(
+            response=f"""
+                <h1>Bad Gateway</h1>
+                <hr />
+                Could not connect to the gateway at <a href="{escape(request.url)}">{escape(request.url)}</a>.
+            """,
+            status=502,
+        )
+    except requests.exceptions.Timeout:
+        return FlaskResponse(
+            response=f"""
+                <h1>Gateway Timeout</h1>
+                <hr />
+                Could not connect to the gateway at <a href="{escape(request.url)}">{escape(request.url)}</a>.
+            """,
+            status=504,
+        )
+    # end try
 
     # exclude some keys in response that would interfere with what we send ourselves
-    headers = [
-        (k, v) for k, v in response.raw.headers.items()
+    headers = {
+        k: v for k, v in flask_response.raw.headers.items()
         if k.lower() not in EXCLUDED_HEADERS
-    ]
-    # endregion exclude some keys in :res response
+    }
+
+    # noinspection PyArgumentList
+    response: Any = Response(
+        content=flask_response.content,
+        status_code=flask_response.status_code,
+        headers=headers,
+    )
+    response: Response
 
     storage.set_cache(
         pk=pk,
         request=request,
-        response=Response(),
+        response=response,
     )
 
-    flask_response = FlaskResponse(response.content, response.status_code, headers)
+    flask_response = FlaskResponse(
+        response=response.content,
+        status=response.status_code,
+        headers=headers,
+    )
     return flask_response
 # end def
