@@ -1,12 +1,20 @@
+data = {
+    "proxy": None,
+    "requests": [],
+}
+
+
 def is_setup() -> bool:
-    return False
+    return (
+        data["proxy"] is not None
+    )
 # end def
 
 def get_setup_proxy() -> str | None:
-    return None
+    return data["proxy"]
 # end def
 
 
 def set_setup_proxy(proxy: str) -> None:
-    return None
+    data["proxy"] = proxy
 # end def
