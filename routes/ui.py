@@ -1,5 +1,6 @@
 import json
 from html import escape
+from urllib.parse import urlencode
 
 from flask import Blueprint, request, url_for, redirect, Response as FlaskResponse
 
@@ -66,12 +67,11 @@ def proxy_requests():
         <li>
             <a href="{url_for(f"{ui.name}.{proxy_request.__name__}", request_pk=index)}">
             {escape(req.name).join(["<h4>", "</h4>"]) if req.name else ''}
-            <code>{escape(req.request.method)}</code>
-            {escape(req.request.url)}<br>
+            {req.html()}
             </a>
         </li>
         """
-        for index, req in enumerate(storage.get_requests())
+        for index, req in enumerate(requests)
     ])}
     </ul>
     """
@@ -112,10 +112,11 @@ def proxy_request(request_pk: int):
             )
         # end if
         return FlaskResponse(
-            response=req.dump_json(),
+            response=f"""
+                {req.html()}<br>
+                <pre>{req.dump_json()}</pre>
+            """,
             status=200,
-            mimetype='application/json',
-            content_type='application/json',
         )
     # end if
 # end def

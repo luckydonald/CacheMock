@@ -1,4 +1,6 @@
+from html import escape
 from typing import TypedDict, Self, Any
+from urllib.parse import urlencode
 
 from pydantic import RootModel
 from pydantic.dataclasses import dataclass
@@ -60,6 +62,12 @@ class Cache:
 
     def dump_json(self):
         return RootModel[self.__class__](self).model_dump_json(indent=4)
+
+    def html(self):
+        return f"""
+        <code>{escape(self.request.method)}</code>
+        {escape(self.request.url)}{'?' if self.request.query else ''}{escape(urlencode(self.request.query, doseq=True))}
+        """
 # end class
 
 
