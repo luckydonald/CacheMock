@@ -14,4 +14,4 @@ app.register_blueprint(ui, url_prefix=HIDDEN_PATH)
 
 
 if __name__ == '__main__':
-    app.run(port=5002, debug=True)
+    app.run(port=5000, debug=True)
