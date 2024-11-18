@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 from flask import Blueprint, request, url_for, redirect, Response as FlaskResponse
 
 import storage
+from utils import is_json_content_type
 
 ui = Blueprint('ui', __name__)
 
@@ -114,6 +115,9 @@ def proxy_request(request_pk: int):
         return FlaskResponse(
             response=f"""
                 {req.html()}<br>
+                {f'<h3>Request Body</h3><pre>{req.request.data}</pre>' if is_json_content_type(req.request.headers.get('Content-Type')) else ''}
+                {f'<h3>Response Body</h3><pre>{req.response.content}</pre>' if is_json_content_type(req.response.headers.get('Content-Type')) else ''}
+                <h3>Full dump:</h3>
                 <pre>{req.dump_json()}</pre>
             """,
             status=200,
