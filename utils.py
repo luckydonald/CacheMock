@@ -1,20 +1,23 @@
-def is_json_content_type(content_type: str) -> tuple[bool, bool]:
+from typing import Literal
+
+
+def is_json_content_type(content_type: str) -> Literal['json', 'json-lines', '']:
     """
     If it is a proper json content type, return True.
     >>> is_json_content_type("")
-    False, False
+    ''
     >>> is_json_content_type('application/json')
-    True, False
+    'json'
     >>> is_json_content_type('json')
-    True, False
+    'json'
     >>> is_json_content_type('application/json; charset=utf-8')
-    True, False
+    'json'
     >>> is_json_content_type('application/x-ndjson; encoding=utf-8')
-    True, True
+    'json-lines'
     >>> is_json_content_type('application/x-ndjson')
-    True, True
+    'json-lines'
     >>> is_json_content_type('x-ndjson')
-    True, True
+    'json-lines'
 
     :param content_type:
     :return:
@@ -22,6 +25,11 @@ def is_json_content_type(content_type: str) -> tuple[bool, bool]:
     split = content_type.split(';')[0]
     split = split.lower()
     split = split.removeprefix('application/')
-    split2 = split.removesuffix('x-nd')
-    return split2 == 'json', split == 'x-ndjson'
+    if split == 'json':
+        return 'json'
+    # end if
+    if split == 'x-ndjson':
+        return 'json-lines'
+    # end if
+    return ''
 # end def
