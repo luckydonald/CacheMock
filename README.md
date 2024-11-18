@@ -12,7 +12,7 @@ pip install -r requirements.txt
 ```
 python app.py
 ```
-Now open [https://localhost:5000/__proxy__](https://localhost:5000/__proxy__).  
+Now open [http://localhost:5000/__proxy__](http://localhost:5000/%5F%5Fproxy%5F%5F).  
 There you can set the URL where to proxy to.  
 Additionally, you can review the made requests.  
 
